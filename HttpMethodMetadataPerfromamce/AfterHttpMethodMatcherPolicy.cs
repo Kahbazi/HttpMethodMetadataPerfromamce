@@ -21,7 +21,8 @@ namespace HttpMethodMetadataPerfromamce
         // Used in tests
         internal static readonly string OriginHeader = "Origin";
         internal static readonly string AccessControlRequestMethod = "Access-Control-Request-Method";
-        internal static readonly string PreflightHttpMethod = "OPTIONS";
+        //internal static readonly string PreflightHttpMethod = "OPTIONS";
+        internal static readonly string PreflightHttpMethod = HttpMethods.Options;
 
         // Used in tests
         internal const string Http405EndpointDisplayName = "405 HTTP Method Not Supported";
@@ -133,7 +134,8 @@ namespace HttpMethodMetadataPerfromamce
                 var httpMethod = httpContext.Request.Method;
                 var headers = httpContext.Request.Headers;
                 if (metadata.AcceptCorsPreflight &&
-                    string.Equals(httpMethod, PreflightHttpMethod, StringComparison.OrdinalIgnoreCase) &&
+                    //string.Equals(httpMethod, PreflightHttpMethod, StringComparison.OrdinalIgnoreCase) &&
+                    object.ReferenceEquals(httpMethod, PreflightHttpMethod) || StringComparer.OrdinalIgnoreCase.Equals(httpMethod, PreflightHttpMethod) &&
                     headers.ContainsKey(HeaderNames.Origin) &&
                     headers.TryGetValue(HeaderNames.AccessControlRequestMethod, out var accessControlRequestMethod) &&
                     !StringValues.IsNullOrEmpty(accessControlRequestMethod))
@@ -399,7 +401,9 @@ namespace HttpMethodMetadataPerfromamce
         {
             for (var i = 0; i < httpMethods.Count; i++)
             {
-                if (string.Equals(httpMethods[i], httpMethod, StringComparison.OrdinalIgnoreCase))
+                var item = httpMethods[i];
+                //if (string.Equals(httpMethods[i], httpMethod, StringComparison.OrdinalIgnoreCase))
+                if (object.ReferenceEquals(item, httpMethod) || StringComparer.OrdinalIgnoreCase.Equals(item, httpMethod))
                 {
                     return true;
                 }
@@ -438,7 +442,8 @@ namespace HttpMethodMetadataPerfromamce
                 var httpMethod = httpContext.Request.Method;
                 var headers = httpContext.Request.Headers;
                 if (_supportsCorsPreflight &&
-                    string.Equals(httpMethod, PreflightHttpMethod, StringComparison.OrdinalIgnoreCase) &&
+                    //string.Equals(httpMethod, PreflightHttpMethod, StringComparison.OrdinalIgnoreCase) &&
+                    object.ReferenceEquals(httpMethod, PreflightHttpMethod) || StringComparer.OrdinalIgnoreCase.Equals(httpMethod, PreflightHttpMethod) &&
                     headers.ContainsKey(HeaderNames.Origin) &&
                     headers.TryGetValue(HeaderNames.AccessControlRequestMethod, out var accessControlRequestMethod) &&
                     !StringValues.IsNullOrEmpty(accessControlRequestMethod))
@@ -500,7 +505,8 @@ namespace HttpMethodMetadataPerfromamce
             {
                 return
                     IsCorsPreflightRequest == other.IsCorsPreflightRequest &&
-                    string.Equals(HttpMethod, other.HttpMethod, StringComparison.OrdinalIgnoreCase);
+                    object.ReferenceEquals(HttpMethod, other.HttpMethod) || StringComparer.OrdinalIgnoreCase.Equals(HttpMethod, other.HttpMethod);
+                    //string.Equals(HttpMethod, other.HttpMethod, StringComparison.OrdinalIgnoreCase);
             }
 
             public override bool Equals(object obj)
